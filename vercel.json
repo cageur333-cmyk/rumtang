@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "functions": {
     "api/**/*.php": {
       "runtime": "vercel-php@0.7.3"
@@ -11,6 +12,14 @@
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
+    },
+    {
+      "src": "/(inventaris|transaksi|order|laporan)",
+      "dest": "/$1.php"
+    },
+    {
+      "src": "/",
+      "dest": "/index.php"
     },
     {
       "src": "/(.*)",

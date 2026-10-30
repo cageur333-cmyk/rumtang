@@ -12,21 +12,29 @@ class Database {
 
     public static function getConnection(): PDO {
         if (self::$instance === null) {
+            $isLocal = in_array(DB_HOST, ['localhost', '127.0.0.1', '::1']);
+            
+            $pdoOptions = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ];
+
+            // Enable SSL for cloud MySQL (TiDB Cloud, Aiven, PlanetScale, etc.)
+            if (!$isLocal && defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                $pdoOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            }
+
             try {
-                // First ensure database exists
-                $dsnServer = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";charset=utf8mb4";
-                $pdoServer = new PDO($dsnServer, DB_USER, DB_PASS, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ]);
-                $pdoServer->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+                if ($isLocal) {
+                    // First ensure database exists on local
+                    $dsnServer = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";charset=utf8mb4";
+                    $pdoServer = new PDO($dsnServer, DB_USER, DB_PASS, $pdoOptions);
+                    $pdoServer->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+                }
 
                 // Connect to database
                 $dsnDb = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-                self::$instance = new PDO($dsnDb, DB_USER, DB_PASS, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ]);
+                self::$instance = new PDO($dsnDb, DB_USER, DB_PASS, $pdoOptions);
 
                 // Ensure schema & seeding
                 self::ensureSchemaAndSeed(self::$instance);
