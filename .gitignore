@@ -2,6 +2,9 @@
 .env
 *.log
 
+# Generated Reports
+reports/*.xls
+
 # Operating System
 Thumbs.db
 Desktop.ini
