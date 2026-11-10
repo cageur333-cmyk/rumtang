@@ -235,11 +235,10 @@ function generateRumtangExcelXml(PDO $pdo): string {
     $xml .= '   <Column ss:Width="50"/>' . "\n";
     $xml .= '   <Column ss:Width="65"/>' . "\n";
     $xml .= '   <Column ss:Width="110"/>' . "\n";
-    $xml .= '   <Column ss:Width="120"/>' . "\n";
-    $xml .= '   <Column ss:Width="160"/>' . "\n";
+    $xml .= '   <Column ss:Width="130"/>' . "\n";
 
-    $xml .= '   <Row ss:Height="24"><Cell ss:StyleID="MainTitle" ss:MergeAcross="9"><Data ss:Type="String">RIWAYAT MUTASI BARANG MASUK &amp; KELUAR</Data></Cell></Row>' . "\n";
-    $xml .= '   <Row ss:Height="18"><Cell ss:StyleID="SubTitle" ss:MergeAcross="9"><Data ss:Type="String">Pencatatan lengkap penerimaan restock dan pengeluaran barang operasional</Data></Cell></Row>' . "\n";
+    $xml .= '   <Row ss:Height="24"><Cell ss:StyleID="MainTitle" ss:MergeAcross="8"><Data ss:Type="String">RIWAYAT MUTASI BARANG MASUK &amp; KELUAR</Data></Cell></Row>' . "\n";
+    $xml .= '   <Row ss:Height="18"><Cell ss:StyleID="SubTitle" ss:MergeAcross="8"><Data ss:Type="String">Pencatatan lengkap penerimaan restock dan pengeluaran barang operasional</Data></Cell></Row>' . "\n";
     $xml .= '   <Row ss:Height="10"></Row>' . "\n";
 
     $xml .= '   <Row ss:Height="26">' . "\n";
@@ -252,7 +251,6 @@ function generateRumtangExcelXml(PDO $pdo): string {
     $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">SATUAN</Data></Cell>' . "\n";
     $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">PEMOHON</Data></Cell>' . "\n";
     $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">LOKASI</Data></Cell>' . "\n";
-    $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">KETERANGAN</Data></Cell>' . "\n";
     $xml .= '   </Row>' . "\n";
 
     $tNo = 1;
@@ -267,7 +265,6 @@ function generateRumtangExcelXml(PDO $pdo): string {
         $xml .= '    <Cell ss:StyleID="DataCenter"><Data ss:Type="String">' . htmlspecialchars($tx['satuan']) . '</Data></Cell>' . "\n";
         $xml .= '    <Cell ss:StyleID="DataCell"><Data ss:Type="String">' . htmlspecialchars($tx['penerima_pemohon']) . '</Data></Cell>' . "\n";
         $xml .= '    <Cell ss:StyleID="DataCell"><Data ss:Type="String">' . htmlspecialchars($tx['keperluan_lokasi']) . '</Data></Cell>' . "\n";
-        $xml .= '    <Cell ss:StyleID="DataCell"><Data ss:Type="String">' . htmlspecialchars($tx['keterangan'] ?: '-') . '</Data></Cell>' . "\n";
         $xml .= '   </Row>' . "\n";
     }
 
