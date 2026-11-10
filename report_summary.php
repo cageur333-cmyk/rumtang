@@ -89,3 +89,17 @@ if (empty($pendingOrders)) {
         echo "- Order #" . $po['order_no'] . " oleh " . $po['pemohon'] . " (" . $po['lokasi_tujuan'] . ") - " . $po['item_count'] . " items\n";
     }
 }
+
+// 5. Generate File Excel Resmi Otomatis
+require_once __DIR__ . '/api/export_excel.php';
+$reportsDir = __DIR__ . '/reports';
+if (!is_dir($reportsDir)) {
+    mkdir($reportsDir, 0777, true);
+}
+$excelFilename = "Laporan_Mingguan_Rumtang_" . date('Y-m-d') . ".xls";
+$excelPath = $reportsDir . '/' . $excelFilename;
+file_put_contents($excelPath, generateRumtangExcelXml($pdo));
+
+echo "\n--- 5. DOKUMEN EXCEL RESMI ---\n";
+echo "File Excel berhasil digenerate di: " . realpath($excelPath) . "\n";
+echo "URL Unduhan via Web: http://localhost/rumtang/api/export_excel.php\n";

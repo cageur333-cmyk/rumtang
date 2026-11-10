@@ -64,14 +64,18 @@ $locSummary = $pdo->query("
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <a href="api/export_csv.php?type=stock" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
-                    <i class="fa-solid fa-file-excel text-emerald-600"></i>
-                    Export Excel / CSV
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="api/export_excel.php" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-sm transition-all">
+                    <i class="fa-solid fa-file-excel"></i>
+                    Download Excel (.xls) Multi-Sheet
                 </a>
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md shadow-emerald-600/20 transition-all">
+                <a href="api/export_csv.php?type=stock" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                    <i class="fa-solid fa-file-csv text-slate-600"></i>
+                    Export CSV
+                </a>
+                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-slate-900 hover:bg-black rounded-xl shadow-md transition-all">
                     <i class="fa-solid fa-print"></i>
-                    Cetak / Simpan PDF
+                    Cetak / PDF
                 </button>
             </div>
         </form>

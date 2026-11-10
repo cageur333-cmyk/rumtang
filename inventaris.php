@@ -44,9 +44,13 @@ foreach ($items as $item) {
 
         <!-- Right Action Buttons -->
         <div class="flex items-center gap-2.5 flex-wrap">
+            <a href="api/export_excel.php" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-sm transition-all">
+                <i class="fa-solid fa-file-excel"></i>
+                Download Excel (.xls)
+            </a>
             <a href="api/export_csv.php?type=stock" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
-                <i class="fa-solid fa-file-excel text-emerald-600"></i>
-                Export Excel/CSV
+                <i class="fa-solid fa-file-csv text-slate-600"></i>
+                CSV
             </a>
             <button onclick="window.print()" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
                 <i class="fa-solid fa-print"></i>
