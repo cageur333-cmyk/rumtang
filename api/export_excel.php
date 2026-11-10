@@ -94,7 +94,7 @@ function generateRumtangExcelXml(PDO $pdo): string {
 
     // Titles
     $xml .= '   <Row ss:Height="24"><Cell ss:StyleID="MainTitle" ss:MergeAcross="9"><Data ss:Type="String">LAPORAN REKAPITULASI INVENTARIS STOK RUMTANG</Data></Cell></Row>' . "\n";
-    $xml .= '   <Row ss:Height="18"><Cell ss:StyleID="SubTitle" ss:MergeAcross="9"><Data ss:Type="String">Tanggal Cetak: ' . date('d F Y, H:i') . ' WIB | Database: MySQL rumtang_db</Data></Cell></Row>' . "\n";
+    $xml .= '   <Row ss:Height="18"><Cell ss:StyleID="SubTitle" ss:MergeAcross="9"><Data ss:Type="String">Tanggal Cetak: ' . date('d F Y, H:i') . ' WIB | Departemen Rumah Tangga &amp; Logistik</Data></Cell></Row>' . "\n";
     $xml .= '   <Row ss:Height="10"></Row>' . "\n";
 
     // Header Row

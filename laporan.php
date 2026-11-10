@@ -97,7 +97,7 @@ $locSummary = $pdo->query("
                 LAPORAN REKAPITULASI INVENTARIS STOK RUMTANG DAN CHEMICAL
             </p>
             <p class="text-[11px] text-slate-500 mt-1">
-                Dicetak pada: <?= date('d F Y, H:i') ?> WIB &bull; Sistem Terintegrasi Database Rumtang
+                Dicetak pada: <?= date('d F Y, H:i') ?> WIB &bull; Sistem Informasi Inventaris Rumtang
             </p>
         </div>
 
