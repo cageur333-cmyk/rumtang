@@ -22,8 +22,22 @@ class Database
             ];
 
             // Enable SSL for cloud MySQL (TiDB Cloud, Aiven, PlanetScale, etc.)
-            if (!$isLocal && defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
-                $pdoOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            if (!$isLocal) {
+                $caPaths = [
+                    '/etc/ssl/certs/ca-certificates.crt',
+                    '/etc/pki/tls/certs/ca-bundle.crt',
+                    '/etc/ssl/ca-bundle.pem',
+                    'C:/laragon/bin/git/mingw64/etc/ssl/cert.pem',
+                ];
+                foreach ($caPaths as $path) {
+                    if (file_exists($path)) {
+                        $pdoOptions[PDO::MYSQL_ATTR_SSL_CA] = $path;
+                        break;
+                    }
+                }
+                if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                    $pdoOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+                }
             }
 
             try {
