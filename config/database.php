@@ -7,13 +7,15 @@ define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 define('DB_NAME', getenv('DB_NAME') ?: 'rumtang_db');
 
-class Database {
+class Database
+{
     private static ?PDO $instance = null;
 
-    public static function getConnection(): PDO {
+    public static function getConnection(): PDO
+    {
         if (self::$instance === null) {
             $isLocal = in_array(DB_HOST, ['localhost', '127.0.0.1', '::1']);
-            
+
             $pdoOptions = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -38,7 +40,6 @@ class Database {
 
                 // Ensure schema & seeding
                 self::ensureSchemaAndSeed(self::$instance);
-
             } catch (PDOException $e) {
                 die("Koneksi Database Gagal: " . $e->getMessage());
             }
@@ -46,7 +47,8 @@ class Database {
         return self::$instance;
     }
 
-    public static function ensureSchemaAndSeed(PDO $pdo): void {
+    public static function ensureSchemaAndSeed(PDO $pdo): void
+    {
         // Create tables
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS `categories` (
@@ -143,7 +145,8 @@ class Database {
         }
     }
 
-    public static function seedInitialData(PDO $pdo): void {
+    public static function seedInitialData(PDO $pdo): void
+    {
         $seedFile = __DIR__ . '/../seed/seed_data.php';
         if (!file_exists($seedFile)) {
             return;
@@ -246,4 +249,3 @@ class Database {
         }
     }
 }
-
