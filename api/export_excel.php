@@ -185,10 +185,9 @@ function generateRumtangExcelXml(PDO $pdo): string {
     $xml .= '   <Column ss:Width="85"/>' . "\n";
     $xml .= '   <Column ss:Width="75"/>' . "\n";
     $xml .= '   <Column ss:Width="85"/>' . "\n";
-    $xml .= '   <Column ss:Width="110"/>' . "\n";
 
-    $xml .= '   <Row ss:Height="24"><Cell ss:StyleID="MainTitle" ss:MergeAcross="7"><Data ss:Type="String">DAFTAR BARANG YANG WAJIB DI-RESTOCK / ORDER</Data></Cell></Row>' . "\n";
-    $xml .= '   <Row ss:Height="18"><Cell ss:StyleID="SubTitle" ss:MergeAcross="7"><Data ss:Type="String">Daftar barang persediaan yang statusnya HABIS atau MENIPIS di bawah batas stok aman</Data></Cell></Row>' . "\n";
+    $xml .= '   <Row ss:Height="24"><Cell ss:StyleID="MainTitle" ss:MergeAcross="6"><Data ss:Type="String">DAFTAR BARANG YANG WAJIB DI-RESTOCK / ORDER</Data></Cell></Row>' . "\n";
+    $xml .= '   <Row ss:Height="18"><Cell ss:StyleID="SubTitle" ss:MergeAcross="6"><Data ss:Type="String">Daftar barang persediaan yang statusnya HABIS atau MENIPIS di bawah batas stok aman</Data></Cell></Row>' . "\n";
     $xml .= '   <Row ss:Height="10"></Row>' . "\n";
 
     $xml .= '   <Row ss:Height="26">' . "\n";
@@ -199,13 +198,11 @@ function generateRumtangExcelXml(PDO $pdo): string {
     $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">SISA STOK</Data></Cell>' . "\n";
     $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">BATAS MIN</Data></Cell>' . "\n";
     $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">STATUS</Data></Cell>' . "\n";
-    $xml .= '    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">SARAN ORDER (QTY)</Data></Cell>' . "\n";
     $xml .= '   </Row>' . "\n";
 
     $cNo = 1;
     foreach ($criticalData as $crit) {
         $statusStyle = ($crit['status_stok'] === 'HABIS') ? 'StatusHabis' : 'StatusMenipis';
-        $saranOrder = max(5, ($crit['stok_min'] * 2) - $crit['stok_akhir']);
 
         $xml .= '   <Row>' . "\n";
         $xml .= '    <Cell ss:StyleID="DataCenter"><Data ss:Type="Number">' . $cNo++ . '</Data></Cell>' . "\n";
@@ -215,7 +212,6 @@ function generateRumtangExcelXml(PDO $pdo): string {
         $xml .= '    <Cell ss:StyleID="DataBoldNumber"><Data ss:Type="Number">' . $crit['stok_akhir'] . '</Data></Cell>' . "\n";
         $xml .= '    <Cell ss:StyleID="DataCenter"><Data ss:Type="Number">' . $crit['stok_min'] . '</Data></Cell>' . "\n";
         $xml .= '    <Cell ss:StyleID="' . $statusStyle . '"><Data ss:Type="String">' . $crit['status_stok'] . '</Data></Cell>' . "\n";
-        $xml .= '    <Cell ss:StyleID="DataBoldNumber"><Data ss:Type="Number">' . $saranOrder . '</Data></Cell>' . "\n";
         $xml .= '   </Row>' . "\n";
     }
 
