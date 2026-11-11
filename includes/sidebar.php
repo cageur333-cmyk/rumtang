@@ -90,25 +90,6 @@ try {
                 <span>Laporan & Cetak</span>
             </a>
         </nav>
-
-        <!-- System Status Box in Sidebar -->
-        <div class="pt-6">
-            <div class="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-semibold text-slate-300">Status Database</span>
-                    <span class="flex h-2 w-2 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                </div>
-                <p class="text-[11px] text-slate-400">MySQL: <strong class="text-emerald-400 font-medium">rumtang_db</strong></p>
-                <p class="text-[11px] text-slate-400">Host: <span class="text-slate-300">localhost</span></p>
-                <div class="mt-2.5 pt-2.5 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
-                    <span>Versi App</span>
-                    <span class="font-bold text-slate-300">v2.4 Live</span>
-                </div>
-            </div>
-        </div>
     </div>
 </aside>
 

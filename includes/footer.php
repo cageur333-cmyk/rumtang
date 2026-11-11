@@ -13,7 +13,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
                     <span>Chemicals & Cleaning Supplies</span>
                 </div>
                 <div>
-                    Terhubung ke MySQL &bull; Laragon Local Server
+                    Departemen Rumah Tangga &amp; Logistik
                 </div>
             </footer>
         </div>
