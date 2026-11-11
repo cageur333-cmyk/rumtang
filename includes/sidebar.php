@@ -1,6 +1,14 @@
 <?php
 // includes/sidebar.php
-$currentScript = basename($_SERVER['PHP_SELF']);
+$reqPath = trim((string)parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+$reqBase = basename($reqPath);
+if ($reqBase === '' || $reqBase === 'rumtang') {
+    $currentScript = 'index.php';
+} elseif (str_ends_with($reqBase, '.php')) {
+    $currentScript = $reqBase;
+} else {
+    $currentScript = $reqBase . '.php';
+}
 
 // Count critical items for sidebar badge
 try {
@@ -89,7 +97,33 @@ try {
                 <i class="fa-solid fa-file-invoice w-5 text-center text-base <?= $currentScript == 'laporan.php' ? 'text-white' : 'text-emerald-400' ?>"></i>
                 <span>Laporan & Cetak</span>
             </a>
+
+            <?php if (!empty($isAdmin)): ?>
+            <div class="pt-5 px-3 pb-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+                Administrasi
+            </div>
+
+            <!-- Kelola Akun -->
+            <a href="pengguna.php" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all <?= $currentScript == 'pengguna.php' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' ?>">
+                <i class="fa-solid fa-users-gear w-5 text-center text-base <?= $currentScript == 'pengguna.php' ? 'text-white' : 'text-emerald-400' ?>"></i>
+                <span>Kelola Akun</span>
+            </a>
+            <?php endif; ?>
         </nav>
+
+        <div class="pt-6 border-t border-slate-800/80 mt-6 space-y-1">
+            <button type="button" onclick="openChangePwModal()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all text-left">
+                <i class="fa-solid fa-key w-5 text-center text-sm text-slate-400"></i>
+                <span>Ganti Password</span>
+            </button>
+            <form method="POST" action="logout.php">
+                <?= Auth::csrfInput($pdo) ?>
+                <button type="submit" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 transition-all text-left">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center text-sm"></i>
+                    <span>Keluar</span>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
 

@@ -1,7 +1,9 @@
 <?php
 // api/export_csv.php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 $pdo = Database::getConnection();
+Auth::requireLogin($pdo);
 
 $type = $_GET['type'] ?? 'stock';
 

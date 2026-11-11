@@ -85,10 +85,12 @@ foreach ($transactions as $t) {
                     <i class="fa-solid fa-file-excel text-emerald-600"></i>
                     Export CSV
                 </a>
+                <?php if ($isAdmin): ?>
                 <button onclick="openNewTxModal()" class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md shadow-emerald-600/20 transition-all">
                     <i class="fa-solid fa-plus"></i>
                     Catat Transaksi Baru
                 </button>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -171,13 +173,15 @@ foreach ($transactions as $t) {
                         <th class="py-3.5 px-4 text-center">Satuan</th>
                         <th class="py-3.5 px-4">Penerima / Pemohon</th>
                         <th class="py-3.5 px-4">Keperluan / Lokasi</th>
-                        <th class="py-3.5 px-4 text-right no-print">Aksi</th>
+                        <?php if ($isAdmin): ?>
+                            <th class="py-3.5 px-4 text-right no-print">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 font-medium">
                     <?php if (empty($transactions)): ?>
                         <tr>
-                            <td colspan="10" class="py-12 text-center text-slate-400">
+                            <td colspan="<?= $isAdmin ? 10 : 9 ?>" class="py-12 text-center text-slate-400">
                                 <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300"></i>
                                 <p class="text-xs">Tidak ada data transaksi yang cocok dengan filter pencarian.</p>
                             </td>
@@ -222,11 +226,13 @@ foreach ($transactions as $t) {
                                         <span class="block text-[11px] text-slate-400 italic"><?= htmlspecialchars($tx['keterangan']) ?></span>
                                     <?php endif; ?>
                                 </td>
+                                <?php if ($isAdmin): ?>
                                 <td class="py-3 px-4 text-right whitespace-nowrap no-print">
                                     <button onclick="confirmDeleteTx(<?= $tx['id'] ?>)" title="Hapus Transaksi" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
                                         <i class="fa-solid fa-trash-can text-xs"></i>
                                     </button>
                                 </td>
+                                <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -236,6 +242,7 @@ foreach ($transactions as $t) {
     </div>
 </div>
 
+<?php if ($isAdmin): ?>
 <!-- Modal Input Transaksi Baru -->
 <div id="newTxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
@@ -250,6 +257,7 @@ foreach ($transactions as $t) {
         </div>
 
         <form action="api/save_transaction.php" method="POST" class="mt-4 space-y-4">
+            <?= Auth::csrfInput($pdo) ?>
             <input type="hidden" name="redirect_to" value="../transaksi.php">
 
             <div class="grid grid-cols-2 gap-3">
@@ -347,6 +355,7 @@ foreach ($transactions as $t) {
         </form>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 function openNewTxModal() {
@@ -414,13 +423,13 @@ function confirmDeleteTx(id) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'api/delete_transaction.php?id=' + id;
+            submitProtectedPost('api/delete_transaction.php', { id: id });
         }
     });
 }
 
 // Auto open modal if action=new in URL
-<?php if (isset($_GET['action']) && $_GET['action'] === 'new'): ?>
+<?php if ($isAdmin && isset($_GET['action']) && $_GET['action'] === 'new'): ?>
 document.addEventListener('DOMContentLoaded', function() {
     openNewTxModal();
 });

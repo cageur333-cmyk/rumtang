@@ -1,12 +1,14 @@
 <?php
 // api/save_transaction.php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 $pdo = Database::getConnection();
 
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+Auth::requireAdmin($pdo);
+$redirectUrl = Auth::safeRedirect($_POST['redirect_to'] ?? '', '/transaksi.php');
+Auth::requirePostWithCsrf($pdo, false, '/transaksi.php');
+
+$isAjax = Auth::isAjaxRequest();
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -116,8 +118,7 @@ try {
         exit;
     }
 
-    $_SESSION['flash_success'] = $msg;
-    $redirectUrl = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : '../transaksi.php';
+    Auth::setFlash($pdo, 'success', $msg);
     header("Location: " . $redirectUrl);
     exit;
 
@@ -129,8 +130,7 @@ try {
         exit;
     }
 
-    $_SESSION['flash_error'] = $e->getMessage();
-    $redirectUrl = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : '../transaksi.php';
+    Auth::setFlash($pdo, 'error', $e->getMessage());
     header("Location: " . $redirectUrl);
     exit;
 }

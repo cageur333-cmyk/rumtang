@@ -1,10 +1,11 @@
 <?php
 // api/update_order_status.php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 $pdo = Database::getConnection();
+
+Auth::requireAdmin($pdo);
+Auth::requirePostWithCsrf($pdo, false, '/order.php');
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -76,16 +77,16 @@ try {
         $msg .= " Otomatis mencatat {$issuedCount} transaksi Barang Keluar.";
     }
 
-    $_SESSION['flash_success'] = $msg;
-    header("Location: ../order.php");
+    Auth::setFlash($pdo, 'success', $msg);
+    header("Location: " . Auth::url('/order.php'));
     exit;
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    $_SESSION['flash_error'] = $e->getMessage();
-    header("Location: ../order.php");
+    Auth::setFlash($pdo, 'error', $e->getMessage());
+    header("Location: " . Auth::url('/order.php'));
     exit;
 }
 

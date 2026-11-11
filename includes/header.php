@@ -1,10 +1,13 @@
 <?php
 // includes/header.php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/auth.php';
 $pdo = Database::getConnection();
+
+$currentUser = !empty($requireAdminPage)
+    ? Auth::requireAdmin($pdo)
+    : Auth::requireLogin($pdo);
+$isAdmin = Auth::isAdmin($currentUser);
 
 // Helper function to format badge
 function getStatusBadge($status) {
@@ -33,6 +36,7 @@ function getStatusBadge($status) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars(Auth::csrfToken($pdo), ENT_QUOTES, 'UTF-8') ?>">
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . ' | ' : '' ?>Rumtang Dashboard - Sistem Inventaris & Order</title>
     
     <!-- Google Fonts Inter -->

@@ -24,7 +24,7 @@ $itemsList = $pdo->query("
     ORDER BY category_name ASC, name ASC
 ")->fetchAll();
 
-$isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
+$isNewAction = $isAdmin && isset($_GET['action']) && $_GET['action'] === 'new';
 ?>
 
 <div class="space-y-6">
@@ -34,14 +34,17 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
             <h3 class="text-base sm:text-lg font-bold text-slate-900">Manajemen Order Barang</h3>
             <p class="text-xs text-slate-500">Ajukan permohonan kebutuhan chemical & alat kebersihan via sistem web</p>
         </div>
+        <?php if ($isAdmin): ?>
         <div class="flex items-center gap-2.5">
             <button onclick="toggleOrderForm()" id="btnToggleOrder" class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md shadow-emerald-600/20 transition-all">
                 <i class="fa-solid fa-cart-plus"></i>
                 <span><?= $isNewAction ? 'Tutup Formulir' : '+ Buat Order Barang Baru' ?></span>
             </button>
         </div>
+        <?php endif; ?>
     </div>
 
+    <?php if ($isAdmin): ?>
     <!-- Order Submission Form (Toggleable) -->
     <div id="orderFormContainer" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm <?= $isNewAction ? '' : 'hidden' ?>">
         <div class="pb-4 mb-4 border-b border-slate-100 flex items-center justify-between">
@@ -60,6 +63,7 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
         </div>
 
         <form action="api/save_order.php" method="POST" id="mainOrderForm" class="space-y-6">
+            <?= Auth::csrfInput($pdo) ?>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Permohonan *</label>
@@ -169,6 +173,7 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
             </div>
         </form>
     </div>
+    <?php endif; ?>
 
     <!-- Orders List Card -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -235,11 +240,11 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
                                     <div class="inline-flex items-center gap-1.5">
                                         <!-- View / Manage Button -->
                                         <button onclick="viewOrderDetail(<?= $ord['id'] ?>)" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
-                                            <i class="fa-solid fa-eye text-slate-500"></i> Detail & Kelola
+                                            <i class="fa-solid fa-eye text-slate-500"></i> <?= $isAdmin ? 'Detail &amp; Kelola' : 'Lihat Detail' ?>
                                         </button>
                                         <!-- Delete Button (if pending or rejected) -->
-                                        <?php if ($ord['status'] === 'PENDING' || $ord['status'] === 'DITOLAK'): ?>
-                                            <button onclick="confirmDeleteOrder(<?= $ord['id'] ?>, '<?= htmlspecialchars($ord['order_no']) ?>')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg">
+                                        <?php if ($isAdmin && ($ord['status'] === 'PENDING' || $ord['status'] === 'DITOLAK')): ?>
+                                            <button onclick="confirmDeleteOrder(<?= $ord['id'] ?>, '<?= htmlspecialchars(addslashes($ord['order_no']), ENT_QUOTES, 'UTF-8') ?>')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg">
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         <?php endif; ?>
@@ -280,8 +285,10 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
             <span class="font-bold text-slate-700">Catatan Pemohon:</span> <span id="modalOrderNote">-</span>
         </div>
 
+        <?php if ($isAdmin): ?>
         <!-- Action Form to Change Status -->
         <form action="api/update_order_status.php" method="POST" id="formOrderStatus" class="mt-5 pt-4 border-t border-slate-100 space-y-3">
+            <?= Auth::csrfInput($pdo) ?>
             <input type="hidden" name="order_id" id="modalOrderId">
 
             <label class="block text-xs font-bold text-slate-700">Ubah Status Order:</label>
@@ -307,6 +314,7 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
                 </label>
             </div>
         </form>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -348,6 +356,7 @@ $isNewAction = isset($_GET['action']) && $_GET['action'] === 'new';
 </template>
 
 <script>
+<?php if ($isAdmin): ?>
 function toggleOrderForm() {
     const container = document.getElementById('orderFormContainer');
     const btn = document.getElementById('btnToggleOrder');
@@ -391,9 +400,13 @@ function removeOrderItemRow(button) {
     }
 }
 
+<?php endif; ?>
 // Fetch and View Order Details
 function viewOrderDetail(orderId) {
-    document.getElementById('modalOrderId').value = orderId;
+    const modalOrderIdEl = document.getElementById('modalOrderId');
+    if (modalOrderIdEl) {
+        modalOrderIdEl.value = orderId;
+    }
     document.getElementById('orderDetailModal').classList.remove('hidden');
     document.getElementById('modalOrderItemsList').innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Memuat data...</p>';
 
@@ -435,6 +448,7 @@ function closeOrderDetailModal() {
     document.getElementById('orderDetailModal').classList.add('hidden');
 }
 
+<?php if ($isAdmin): ?>
 function confirmDeleteOrder(orderId, orderNo) {
     Swal.fire({
         title: 'Hapus order ' + orderNo + '?',
@@ -447,10 +461,11 @@ function confirmDeleteOrder(orderId, orderNo) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'api/delete_order.php?id=' + orderId;
+            submitProtectedPost('api/delete_order.php', { id: orderId });
         }
     });
 }
+<?php endif; ?>
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

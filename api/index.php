@@ -34,40 +34,70 @@ switch ($path) {
     case 'laporan.php':
         require $baseDir . '/laporan.php';
         exit;
+
+    case 'pengguna':
+    case 'pengguna.php':
+        require $baseDir . '/pengguna.php';
+        exit;
+
+    case 'login':
+    case 'login.php':
+        require $baseDir . '/login.php';
+        exit;
+
+    case 'logout':
+    case 'logout.php':
+        require $baseDir . '/logout.php';
+        exit;
 }
 
-// API routes handling
+// Tolak akses langsung ke folder/file internal atau dotfile (.git, .env, config, seed, includes, reports, report_summary.php)
+if (
+    str_starts_with($path, '.') ||
+    str_contains($path, '/.') ||
+    str_contains($path, '..') ||
+    preg_match('#^(config|seed|includes|reports)(/|$)#i', $path) ||
+    strcasecmp($path, 'report_summary.php') === 0 ||
+    strcasecmp($path, 'vercel.json') === 0 ||
+    strcasecmp($path, 'README.md') === 0
+) {
+    http_response_code(403);
+    echo '403 Forbidden';
+    exit;
+}
+
+// API routes handling (hanya izinkan script di folder api/)
 if (str_starts_with($path, 'api/')) {
     $script = substr($path, 4);
-    $apiFile = __DIR__ . '/' . $script;
-    if (file_exists($apiFile) && is_file($apiFile)) {
-        require $apiFile;
-        exit;
+    if ($script !== '' && !str_contains($script, '/') && !str_contains($script, '\\') && str_ends_with($script, '.php')) {
+        $apiFile = __DIR__ . '/' . $script;
+        if (file_exists($apiFile) && is_file($apiFile)) {
+            require $apiFile;
+            exit;
+        }
     }
+    http_response_code(404);
+    echo '404 Not Found';
+    exit;
 }
 
-// Check if static or root PHP file
+// Check static assets in root only (do not bypass allowlist for arbitrary php)
 $targetFile = $baseDir . '/' . $path;
-if (file_exists($targetFile) && is_file($targetFile)) {
-    if (str_ends_with($targetFile, '.php')) {
-        require $targetFile;
-    } else {
-        // Static file mime type
-        $ext = pathinfo($targetFile, PATHINFO_EXTENSION);
-        $mimes = [
-            'css' => 'text/css',
-            'js' => 'application/javascript',
-            'png' => 'image/png',
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'svg' => 'image/svg+xml',
-            'ico' => 'image/x-icon',
-        ];
-        if (isset($mimes[$ext])) {
-            header('Content-Type: ' . $mimes[$ext]);
-        }
-        readfile($targetFile);
+if ($path !== '' && file_exists($targetFile) && is_file($targetFile) && !str_ends_with(strtolower($targetFile), '.php')) {
+    $ext = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+    $mimes = [
+        'css' => 'text/css',
+        'js' => 'application/javascript',
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon',
+    ];
+    if (isset($mimes[$ext])) {
+        header('Content-Type: ' . $mimes[$ext]);
     }
+    readfile($targetFile);
     exit;
 }
 

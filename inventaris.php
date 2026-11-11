@@ -56,10 +56,12 @@ foreach ($items as $item) {
                 <i class="fa-solid fa-print"></i>
                 Cetak
             </button>
+            <?php if ($isAdmin): ?>
             <button onclick="openAddItemModal()" class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md shadow-emerald-600/20 transition-all">
                 <i class="fa-solid fa-circle-plus"></i>
                 Tambah Barang Baru
             </button>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -98,7 +100,9 @@ foreach ($items as $item) {
                         <th class="py-3.5 px-4 text-center">Stok Akhir</th>
                         <th class="py-3.5 px-4 text-center">Satuan</th>
                         <th class="py-3.5 px-4 text-center">Status</th>
-                        <th class="py-3.5 px-4 text-right no-print">Aksi</th>
+                        <?php if ($isAdmin): ?>
+                            <th class="py-3.5 px-4 text-right no-print">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 font-medium" id="tableBody">
@@ -129,6 +133,7 @@ foreach ($items as $item) {
                             <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                 <?= getStatusBadge($item['status_stok']) ?>
                             </td>
+                            <?php if ($isAdmin): ?>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap no-print">
                                 <div class="inline-flex items-center gap-1.5">
                                     <!-- Quick Transaction Button -->
@@ -140,11 +145,12 @@ foreach ($items as $item) {
                                         <i class="fa-solid fa-pen-to-square text-xs"></i>
                                     </button>
                                     <!-- Delete Button -->
-                                    <button onclick="confirmDeleteItem(<?= $item['id'] ?>, '<?= addslashes($item['name']) ?>')" title="Hapus Barang" class="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 rounded-lg transition-colors border border-rose-200">
+                                    <button onclick="confirmDeleteItem(<?= $item['id'] ?>, '<?= htmlspecialchars(addslashes($item['name']), ENT_QUOTES, 'UTF-8') ?>')" title="Hapus Barang" class="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 rounded-lg transition-colors border border-rose-200">
                                         <i class="fa-solid fa-trash text-xs"></i>
                                     </button>
                                 </div>
                             </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -153,6 +159,7 @@ foreach ($items as $item) {
     </div>
 </div>
 
+<?php if ($isAdmin): ?>
 <!-- Modal 1: Tambah / Edit Barang -->
 <div id="itemModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
@@ -163,6 +170,7 @@ foreach ($items as $item) {
             </button>
         </div>
         <form action="api/save_item.php" method="POST" class="mt-4 space-y-4">
+            <?= Auth::csrfInput($pdo) ?>
             <input type="hidden" name="id" id="itemId">
 
             <div>
@@ -218,6 +226,7 @@ foreach ($items as $item) {
             </button>
         </div>
         <form action="api/save_transaction.php" method="POST" class="mt-4 space-y-4">
+            <?= Auth::csrfInput($pdo) ?>
             <input type="hidden" name="item_id" id="qtx_itemId">
             <input type="hidden" name="satuan" id="qtx_satuan">
             <input type="hidden" name="redirect_to" value="../inventaris.php">
@@ -262,6 +271,7 @@ foreach ($items as $item) {
         </form>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 let currentCategory = 'ALL';
@@ -302,6 +312,7 @@ function applyFilters() {
     });
 }
 
+<?php if ($isAdmin): ?>
 // Modal Handlers
 function openAddItemModal() {
     document.getElementById('modalTitle').innerText = 'Tambah Barang Baru';
@@ -369,10 +380,11 @@ function confirmDeleteItem(id, name) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'api/delete_item.php?id=' + id;
+            submitProtectedPost('api/delete_item.php', { id: id });
         }
     });
 }
+<?php endif; ?>
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

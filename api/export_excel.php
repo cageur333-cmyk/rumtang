@@ -3,6 +3,11 @@
 require_once __DIR__ . '/../config/database.php';
 $pdo = Database::getConnection();
 
+if (php_sapi_name() !== 'cli') {
+    require_once __DIR__ . '/../includes/auth.php';
+    Auth::requireLogin($pdo);
+}
+
 // Function to generate the XML Spreadsheet content
 function generateRumtangExcelXml(PDO $pdo): string {
     // 1. Fetch Master Inventory Stock

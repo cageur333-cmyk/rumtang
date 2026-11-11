@@ -1,15 +1,17 @@
 <?php
 // api/delete_transaction.php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 $pdo = Database::getConnection();
 
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+Auth::requireAdmin($pdo);
+$redirectUrl = Auth::safeRedirect($_POST['redirect_to'] ?? '', '/transaksi.php');
+Auth::requirePostWithCsrf($pdo, false, '/transaksi.php');
+
+$isAjax = Auth::isAjaxRequest();
 
 try {
-    $id = (int)($_POST['id'] ?? $_GET['id'] ?? 0);
+    $id = (int)($_POST['id'] ?? 0);
     if ($id <= 0) {
         throw new Exception("ID transaksi tidak valid.");
     }
@@ -25,8 +27,7 @@ try {
         exit;
     }
 
-    $_SESSION['flash_success'] = $msg;
-    $redirectUrl = !empty($_GET['redirect_to']) ? $_GET['redirect_to'] : '../transaksi.php';
+    Auth::setFlash($pdo, 'success', $msg);
     header("Location: " . $redirectUrl);
     exit;
 
@@ -38,8 +39,8 @@ try {
         exit;
     }
 
-    $_SESSION['flash_error'] = $e->getMessage();
-    header("Location: ../transaksi.php");
+    Auth::setFlash($pdo, 'error', $e->getMessage());
+    header("Location: " . Auth::url('/transaksi.php'));
     exit;
 }
 

@@ -2,7 +2,9 @@
 // api/get_order_details.php
 header('Content-Type: application/json');
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 $pdo = Database::getConnection();
+Auth::requireLogin($pdo, true);
 
 try {
     $id = (int)($_GET['id'] ?? 0);
